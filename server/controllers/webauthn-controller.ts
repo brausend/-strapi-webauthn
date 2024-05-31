@@ -31,7 +31,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
       })
       return
     }
-    const entities = await strapi.query('plugin::webauthn.passkey').findMany({where: {user: ctx.state.user.id}})
+    const entities = await strapi.query('plugin::strapi-webauthn.passkey').findMany({where: {user: ctx.state.user.id}})
     return entities;
   },
   async preCheck(ctx) {
@@ -52,7 +52,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
       return
 
     }
-    const passkey = await strapi.query('plugin::webauthn.passkey').findOne({where: {user: user.id}})
+    const passkey = await strapi.query('plugin::strapi-webauthn.passkey').findOne({where: {user: user.id}})
     if (!passkey) {
       return ctx.send({success: false});
     } else {
@@ -61,8 +61,8 @@ export default ({strapi}: { strapi: Strapi }) => ({
 
   },
   async registerGenerateOptions(ctx) {
-    const rpID = strapi.plugin('webauthn').config('rpID');
-    const rpName = strapi.plugin('webauthn').config('rpName');
+    const rpID = strapi.plugin('strapi-webauthn').config('rpID');
+    const rpName = strapi.plugin('strapi-webauthn').config('rpName');
     const {user} = ctx.query;
     const existingUser = await strapi.query('plugin::users-permissions.user').findOne({where: {email: user}});
 
@@ -72,7 +72,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
 
 
     const userID = Buffer.from(existingUser.id.toString());
-    let userPasskeys = await strapi.query('plugin::webauthn.passkey').findMany({
+    let userPasskeys = await strapi.query('plugin::strapi-webauthn.passkey').findMany({
       where: {user: existingUser.id}
     })
     const options = await generateRegistrationOptions({
@@ -98,7 +98,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
 
 
     // Store challenge for verification
-    const dbChallenge = await strapi.query('plugin::webauthn.challenge').create({
+    const dbChallenge = await strapi.query('plugin::strapi-webauthn.challenge').create({
       data: {
         user: existingUser,
         challenge: options.challenge,
@@ -112,10 +112,10 @@ export default ({strapi}: { strapi: Strapi }) => ({
     /* Delete all invalid Challenges */
   },
   async registerVerify(ctx) {
-    const rpID = strapi.plugin('webauthn').config('rpID');
-    const rpName =  strapi.plugin('webauthn').config('rpName');
+    const rpID = strapi.plugin('strapi-webauthn').config('rpID');
+    const rpName =  strapi.plugin('strapi-webauthn').config('rpName');
     const challengeId = ctx.params.challengeId;
-    const challenge = await strapi.query('plugin::webauthn.challenge').findOne({
+    const challenge = await strapi.query('plugin::strapi-webauthn.challenge').findOne({
       where: {id: challengeId},
       populate: ['user.id']
     })
@@ -144,7 +144,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
       const verification = await verifyRegistrationResponse({
         response: ctx.request.body,
         expectedChallenge: challenge.challenge,
-        expectedOrigin: strapi.plugin('webauthn').config('origin'),
+        expectedOrigin: strapi.plugin('strapi-webauthn').config('origin'),
         expectedRPID: rpID,
       });
 
@@ -194,7 +194,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
         }
 
 
-        const passkey = await strapi.query('plugin::webauthn.passkey').create({data: pKey});
+        const passkey = await strapi.query('plugin::strapi-webauthn.passkey').create({data: pKey});
 
         ctx.send({success: true});
       } else {
@@ -209,8 +209,8 @@ export default ({strapi}: { strapi: Strapi }) => ({
 
 
   async authGenerateOptions(ctx) {
-    const rpID = strapi.plugin('webauthn').config('rpID');
-    const rpName =  strapi.plugin('webauthn').config('rpName');
+    const rpID = strapi.plugin('strapi-webauthn').config('rpID');
+    const rpName =  strapi.plugin('strapi-webauthn').config('rpName');
     const pUser = ctx.request.query.user;
     if (!pUser) {
       ctx.send({
@@ -227,7 +227,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
       })
       return
     }
-    let userPasskeys = await strapi.query('plugin::webauthn.passkey').findMany({
+    let userPasskeys = await strapi.query('plugin::strapi-webauthn.passkey').findMany({
       where: {user: user.id}
     })
     const options: any = await generateAuthenticationOptions({
@@ -240,7 +240,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
       // Require users to use a previously-registered authenticator
     })
 
-    const dbChallenge = await strapi.query('plugin::webauthn.challenge').create({
+    const dbChallenge = await strapi.query('plugin::strapi-webauthn.challenge').create({
       data: {
         user: user,
         challenge: options.challenge,
@@ -253,10 +253,10 @@ export default ({strapi}: { strapi: Strapi }) => ({
 
 
   async authVerify(ctx) {
-    const rpID = strapi.plugin('webauthn').config('rpID');
-    const rpName =  strapi.plugin('webauthn').config('rpName');
+    const rpID = strapi.plugin('strapi-webauthn').config('rpID');
+    const rpName =  strapi.plugin('strapi-webauthn').config('rpName');
     const challengeId = ctx.params.challengeId;
-    const challenge = await strapi.query('plugin::webauthn.challenge').findOne({
+    const challenge = await strapi.query('plugin::strapi-webauthn.challenge').findOne({
       where: {id: challengeId},
       populate: ['user.id']
     })
@@ -280,7 +280,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
       return
     }
 
-    let passkey = await strapi.query('plugin::webauthn.passkey').findOne({
+    let passkey = await strapi.query('plugin::strapi-webauthn.passkey').findOne({
       where: {user: tUser.id, credID: ctx.request.body.id}
     })
     console.log(passkey);
@@ -331,7 +331,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
   },
   async cleanUp(userId) {
     // Find old Challenges that are no longer valid and delete them;
-    const challenges = await strapi.query('plugin::webauthn.challenge').findMany({
+    const challenges = await strapi.query('plugin::strapi-webauthn.challenge').findMany({
       where: {
         user: {id: userId},
         "validUTC": {
@@ -340,7 +340,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
       }
     })
     _.map(challenges, (c) => {
-      strapi.query('plugin::webauthn.challenge').delete({where: {id: c.id}});
+      strapi.query('plugin::strapi-webauthn.challenge').delete({where: {id: c.id}});
     })
   }
 });

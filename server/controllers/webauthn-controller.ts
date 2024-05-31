@@ -15,9 +15,9 @@ const {
 const crypto = require('crypto');
 
 const rpID = strapi.plugin('webauthn').config('rpID');
-//'localhost';
+
 const rpName =  strapi.plugin('webauthn').config('rpName');
-//'easyli.io'
+
 function decodeBase64(data) {
   return Uint8Array.from(atob(data).split(""), (x) => x.charCodeAt(0));
 }

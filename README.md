@@ -70,7 +70,7 @@ Authenticate a User
 
 ```
 async function login(user) {
-const optionsResponse = await fetch('http://localhost:1337/webauthn/auth/generate-options?user=' + user, {
+const optionsResponse = await fetch('.../auth/generate-options?user=' + user, {
 method: 'GET'
 });
 

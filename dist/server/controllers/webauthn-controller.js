@@ -27,10 +27,6 @@ const moment = __importStar(require("moment"));
 const _ = __importStar(require("lodash"));
 const { generateRegistrationOptions, verifyRegistrationResponse, generateAuthenticationOptions, verifyAuthenticationResponse } = require('@simplewebauthn/server');
 const crypto = require('crypto');
-const rpID = strapi.plugin('webauthn').config('rpID');
-//'localhost';
-const rpName = strapi.plugin('webauthn').config('rpName');
-//'easyli.io'
 function decodeBase64(data) {
     return Uint8Array.from(atob(data).split(""), (x) => x.charCodeAt(0));
 }
@@ -75,6 +71,8 @@ exports.default = ({ strapi }) => ({
         }
     },
     async registerGenerateOptions(ctx) {
+        const rpID = strapi.plugin('webauthn').config('rpID');
+        const rpName = strapi.plugin('webauthn').config('rpName');
         const { user } = ctx.query;
         const existingUser = await strapi.query('plugin::users-permissions.user').findOne({ where: { email: user } });
         if (!existingUser) {
@@ -118,6 +116,8 @@ exports.default = ({ strapi }) => ({
         /* Delete all invalid Challenges */
     },
     async registerVerify(ctx) {
+        const rpID = strapi.plugin('webauthn').config('rpID');
+        const rpName = strapi.plugin('webauthn').config('rpName');
         const challengeId = ctx.params.challengeId;
         const challenge = await strapi.query('plugin::webauthn.challenge').findOne({
             where: { id: challengeId },
@@ -188,6 +188,8 @@ exports.default = ({ strapi }) => ({
         }
     },
     async authGenerateOptions(ctx) {
+        const rpID = strapi.plugin('webauthn').config('rpID');
+        const rpName = strapi.plugin('webauthn').config('rpName');
         const pUser = ctx.request.query.user;
         if (!pUser) {
             ctx.send({
@@ -227,6 +229,8 @@ exports.default = ({ strapi }) => ({
         return options;
     },
     async authVerify(ctx) {
+        const rpID = strapi.plugin('webauthn').config('rpID');
+        const rpName = strapi.plugin('webauthn').config('rpName');
         const challengeId = ctx.params.challengeId;
         const challenge = await strapi.query('plugin::webauthn.challenge').findOne({
             where: { id: challengeId },

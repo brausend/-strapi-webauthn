@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
-    default: {
+    default: ({ env }) => ({
         origin: [],
-        rpID: 'your-site',
-        rpName: 'your-site-name'
-    },
+        rpID: env.rpID || 'rpID',
+        rpName: env.rpID || 'rpName'
+    }),
     validator() { },
 };

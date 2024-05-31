@@ -14,10 +14,6 @@ const {
 } = require('@simplewebauthn/server');
 const crypto = require('crypto');
 
-const rpID = strapi.plugin('webauthn').config('rpID');
-
-const rpName =  strapi.plugin('webauthn').config('rpName');
-
 function decodeBase64(data) {
   return Uint8Array.from(atob(data).split(""), (x) => x.charCodeAt(0));
 }
@@ -25,6 +21,7 @@ function decodeBase64(data) {
 function encodeBase64(data) {
   return btoa(String.fromCharCode(...new Uint8Array(data)));
 }
+
 export default ({strapi}: { strapi: Strapi }) => ({
   async listKeys(ctx) {
     if (!ctx.state.user) {
@@ -64,6 +61,8 @@ export default ({strapi}: { strapi: Strapi }) => ({
 
   },
   async registerGenerateOptions(ctx) {
+    const rpID = strapi.plugin('webauthn').config('rpID');
+    const rpName = strapi.plugin('webauthn').config('rpName');
     const {user} = ctx.query;
     const existingUser = await strapi.query('plugin::users-permissions.user').findOne({where: {email: user}});
 
@@ -113,7 +112,8 @@ export default ({strapi}: { strapi: Strapi }) => ({
     /* Delete all invalid Challenges */
   },
   async registerVerify(ctx) {
-
+    const rpID = strapi.plugin('webauthn').config('rpID');
+    const rpName =  strapi.plugin('webauthn').config('rpName');
     const challengeId = ctx.params.challengeId;
     const challenge = await strapi.query('plugin::webauthn.challenge').findOne({
       where: {id: challengeId},
@@ -144,7 +144,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
       const verification = await verifyRegistrationResponse({
         response: ctx.request.body,
         expectedChallenge: challenge.challenge,
-        expectedOrigin:  strapi.plugin('webauthn').config('origin'),
+        expectedOrigin: strapi.plugin('webauthn').config('origin'),
         expectedRPID: rpID,
       });
 
@@ -167,7 +167,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
         const pKey: any = {
           user: tUser,
           userID: tUser.email,
-          authenticatorID:ctx.request.body.id,
+          authenticatorID: ctx.request.body.id,
           credPublicKey: Buffer.from(credentialPublicKey).toString('base64'),
           credID: credentialID,
           counter,
@@ -209,7 +209,8 @@ export default ({strapi}: { strapi: Strapi }) => ({
 
 
   async authGenerateOptions(ctx) {
-
+    const rpID = strapi.plugin('webauthn').config('rpID');
+    const rpName =  strapi.plugin('webauthn').config('rpName');
     const pUser = ctx.request.query.user;
     if (!pUser) {
       ctx.send({
@@ -252,6 +253,8 @@ export default ({strapi}: { strapi: Strapi }) => ({
 
 
   async authVerify(ctx) {
+    const rpID = strapi.plugin('webauthn').config('rpID');
+    const rpName =  strapi.plugin('webauthn').config('rpName');
     const challengeId = ctx.params.challengeId;
     const challenge = await strapi.query('plugin::webauthn.challenge').findOne({
       where: {id: challengeId},
@@ -308,9 +311,8 @@ export default ({strapi}: { strapi: Strapi }) => ({
       verification = await verifyAuthenticationResponse(opt);
     } catch (error) {
       console.error(error);
-      return ctx.send({success:false,error: error.message});
+      return ctx.send({success: false, error: error.message});
     }
-
 
 
     if (verification.verified) {
@@ -318,7 +320,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
       const token = strapi.plugin('users-permissions').service('jwt').issue({id: tUser.id});
       return ctx.send({
         jwt: token,
-        user: _.pick(tUser,['id,email,username'])
+        user: _.pick(tUser, ['id,email,username'])
       });
     } else {
       // Authentifizierung fehlgeschlagen

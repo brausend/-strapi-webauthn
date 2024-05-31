@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "challenges",
+  "info": {
+    "singularName": "challenge",
+    "pluralName": "challenges",
+    "displayName": "challenge"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "validUTC": {
+      "type": "datetime"
+    },
+    "counter": {
+      "type": "number"
+    },
+    "challenge": {
+      "type": "string"
+    },
+
+  }
+}

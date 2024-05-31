@@ -1,0 +1,84 @@
+{
+    "kind": "collectionType",
+    "collectionName": "passkeys",
+    "info": {
+        "singularName": "passkey",
+        "pluralName": "passkeys",
+        "displayName": "passkey"
+    },
+    "options": {
+        "draftAndPublish": false
+    },
+    "pluginOptions": {},
+    "attributes": {
+        "user": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "plugin::users-permissions.user"
+        },
+        "userID": {
+            "type": "string"
+        },
+        "authenticatorID": {
+            "type": "string"
+        },
+        "credPublicKey": {
+            "type": "string"
+        },
+        "credID": {
+            "type": "string"
+        },
+        "credType": {
+            "type": "string"
+        },
+        "credDeviceType": {
+            "type": "string"
+        },
+        "credBackedUp": {
+            "type": "boolean"
+        },
+        "userVerified:": {
+            "type": "boolean"
+        },
+        "description": {
+            "type": "string"
+        },
+        "aaguid": {
+            "type": "string"
+        },
+        "webauthn_user_id": {
+            "type": "string"
+        },
+        "public_key": {
+            "type": "string",
+            "private": true
+        },
+        "lastUsedUTC": {
+            "type": "datetime"
+        },
+        "counter": {
+            "type": "number"
+        },
+        "signCount": {
+            "type": "number"
+        },
+        "transports": {
+            "type": "string"
+        },
+        "attestationType": {
+            "type": "string"
+        },
+        "attestationObject": {
+            "type": "string"
+        },
+        "userVerification": {
+            "type": "string"
+        },
+        "backup_eligible": {
+            "type": "boolean"
+        },
+        "backup_status": {
+            "type": "boolean"
+        }
+    }
+}

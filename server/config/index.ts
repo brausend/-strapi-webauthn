@@ -1,8 +1,8 @@
 export default {
   default:  ({ env }) => ({
     origin:[],
-    rpID:'your-site',
-    rpName :'your-site-name'
+    rpID: env.rpID || 'rpID',
+    rpName: env.rpID || 'rpName'
   }),
   validator() {},
 };

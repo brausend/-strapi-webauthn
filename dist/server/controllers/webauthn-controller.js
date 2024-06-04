@@ -141,10 +141,11 @@ exports.default = ({ strapi }) => ({
             return;
         }
         try {
+            let origins = strapi.plugin('strapi-webauthn').config('origin');
             const verification = await verifyRegistrationResponse({
                 response: ctx.request.body,
                 expectedChallenge: challenge.challenge,
-                expectedOrigin: strapi.plugin('strapi-webauthn').config('origin'),
+                expectedOrigin: origins,
                 expectedRPID: rpID,
             });
             if (verification.verified) {
@@ -266,10 +267,11 @@ exports.default = ({ strapi }) => ({
         }
         let verification;
         try {
+            let origins = strapi.plugin('strapi-webauthn').config('origin');
             const opt = {
                 response: ctx.request.body,
                 expectedChallenge: challenge.challenge,
-                expectedOrigin: ['http://localhost:8100', 'https://app.easyli.io'],
+                expectedOrigin: origins,
                 expectedRPID: rpID,
                 authenticator: {
                     credentialID: passkey.credID,

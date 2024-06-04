@@ -113,7 +113,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
   },
   async registerVerify(ctx) {
     const rpID = strapi.plugin('strapi-webauthn').config('rpID');
-    const rpName =  strapi.plugin('strapi-webauthn').config('rpName');
+    const rpName = strapi.plugin('strapi-webauthn').config('rpName');
     const challengeId = ctx.params.challengeId;
     const challenge = await strapi.query('plugin::strapi-webauthn.challenge').findOne({
       where: {id: challengeId},
@@ -140,11 +140,11 @@ export default ({strapi}: { strapi: Strapi }) => ({
     }
 
     try {
-
+      let origins: string[] = strapi.plugin('strapi-webauthn').config('origin');
       const verification = await verifyRegistrationResponse({
         response: ctx.request.body,
         expectedChallenge: challenge.challenge,
-        expectedOrigin: strapi.plugin('strapi-webauthn').config('origin'),
+        expectedOrigin: origins,
         expectedRPID: rpID,
       });
 
@@ -210,7 +210,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
 
   async authGenerateOptions(ctx) {
     const rpID = strapi.plugin('strapi-webauthn').config('rpID');
-    const rpName =  strapi.plugin('strapi-webauthn').config('rpName');
+    const rpName = strapi.plugin('strapi-webauthn').config('rpName');
     const pUser = ctx.request.query.user;
     if (!pUser) {
       ctx.send({
@@ -254,7 +254,7 @@ export default ({strapi}: { strapi: Strapi }) => ({
 
   async authVerify(ctx) {
     const rpID = strapi.plugin('strapi-webauthn').config('rpID');
-    const rpName =  strapi.plugin('strapi-webauthn').config('rpName');
+    const rpName = strapi.plugin('strapi-webauthn').config('rpName');
     const challengeId = ctx.params.challengeId;
     const challenge = await strapi.query('plugin::strapi-webauthn.challenge').findOne({
       where: {id: challengeId},
@@ -294,10 +294,11 @@ export default ({strapi}: { strapi: Strapi }) => ({
 
     let verification;
     try {
+      let origins: string[] = strapi.plugin('strapi-webauthn').config('origin');
       const opt = {
         response: ctx.request.body,
         expectedChallenge: challenge.challenge,
-        expectedOrigin: ['http://localhost:8100', 'https://app.easyli.io'],
+        expectedOrigin: origins,
         expectedRPID: rpID,
         authenticator: {
           credentialID: passkey.credID,

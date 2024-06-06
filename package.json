@@ -1,6 +1,6 @@
 {
   "name": "strapi-webauthn",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Webauthn plugin for passkey login.",
   "strapi": {
     "name": "strapi-webauthn",

@@ -77,7 +77,6 @@ export default ({strapi}: { strapi: Strapi }) => ({
     })
     const options = await generateRegistrationOptions({
       rpName: rpName,
-      rpID: rpID,
       userID,
       userName: Buffer.from(existingUser.email),
       userDisplayName: existingUser.email,
